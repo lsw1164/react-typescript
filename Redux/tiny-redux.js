@@ -1,4 +1,4 @@
-export function createStore(reducer) {
+export function createStore(reducer, middlewares = []) {
   let state;
   const listeners = [];
   const publish = () => {
@@ -15,7 +15,17 @@ export function createStore(reducer) {
   };
   const getState = () => ({ ...state });
 
-  return { dispatch, getState, subscribe };
+  const store = {
+    getState,
+    subscribe,
+  };
+
+  let lastDispatch = dispatch;
+  middlewares.reverse().forEach((middleware) => {
+    lastDispatch = middleware(store)(lastDispatch);
+  });
+
+  return { ...store, dispatch: lastDispatch };
 }
 
 export const actionCreator = (type, payload = {}) => ({
