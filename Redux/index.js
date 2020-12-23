@@ -1,18 +1,23 @@
 import { createStore, actionCreator } from "./tiny-redux.js";
 
+const INIT = "init";
+const INC = "inc";
+const RESET = "reset";
+
 function reducer(state = {}, { type, payload }) {
   switch (type) {
-    case "init":
+    case INIT:
       return {
         ...state,
         count: payload.count,
       };
-    case "inc":
+    case INC:
+      const prevCount = state.count || 0;
       return {
         ...state,
-        count: state.count + 1,
+        count: prevCount + 1,
       };
-    case "reset":
+    case RESET:
       return {
         ...state,
         count: 0,
@@ -25,16 +30,20 @@ function reducer(state = {}, { type, payload }) {
 const store = createStore(reducer);
 
 store.subscribe(() => {
+  const { count } = store.getState();
+  document.querySelector(".count").innerHTML = count;
   console.log(store.getState());
-}, "hello");
-
-store.dispatch({
-  type: "init",
-  payload: { count: 1 },
 });
 
-store.dispatch({ type: "inc" });
+function handleOnClickInc() {
+  store.dispatch(actionCreator(INC));
+}
 
-store.dispatch(actionCreator("reset"));
+function handleOnClickReset() {
+  store.dispatch(actionCreator(RESET));
+}
 
-const Increment = () => store.dispatch(actionCreator("inc"));
+document.querySelector(".inc-btn").addEventListener("click", handleOnClickInc);
+document
+  .querySelector(".reset-btn")
+  .addEventListener("click", handleOnClickReset);

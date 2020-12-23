@@ -1,1 +1,1 @@
-# react-typescript
+# tiny-redux
